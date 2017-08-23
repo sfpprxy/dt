@@ -114,23 +114,26 @@
     (write-all-to-file all)
     (print "Deleted!")))
 
-;; todo
-(define (finish-todo id)
+(define (switch-status id status)
   (define (mark-todo todos)
     (cond ((null? todos) '())
-          ((match-todo id (caar todos)) (cons (list (caar todos) "1" (caddar todos)) (mark-todo (cdr todos))))
+          ((match-todo id (caar todos)) (cons (list (caar todos) status (caddar todos)) (mark-todo (cdr todos))))
           (else (cons (car todos) (mark-todo (cdr todos))))))
-  (define (get-title id todos)
-    (cond ((null? todos) "")
-          ((match-todo id (caar todos)) (caddar todos))
-          (else (get-title (cdr todos)))))
   (let ([all (map list->string (mark-todo (all-todos)))])
     (write-all-to-file all)
-    (print (string-append "Finished: " (get-title id (all-todos))))))
+    ))
 
-;; todo
+(define (get-title id todos)
+  (cond ((null? todos) "")
+        ((match-todo id (caar todos)) (caddar todos))
+        (else (get-title (cdr todos)))))
+
+(define (finish-todo id)
+  (switch-status id "1")
+  (print (string-append "Finished: " (get-title id (all-todos)))))
 (define (redo-todo id)
-  (print "redo todo"))
+  (switch-status id "0")
+  (print (string-append "Redo: " (get-title id (all-todos)))))
 
 ;; main
 ((lambda (filename)
