@@ -101,12 +101,14 @@
   (print "td: '-r' redo an item")
   (print "td: '-d id' delete id of an item"))
 
+(define (match-todo id todo)
+  (number? (string-contains todo id)))
 
 ;; delete an item
 (define (delete-todo id)
   (define (del id todos)
     (cond ((null? todos) '())
-          ((number? (string-contains (caar todos) id)) (del id (cdr todos)))
+          ((match-todo id (caar todos)) (del id (cdr todos)))
           (else (cons (car todos) (del id (cdr todos))))))
   (let ([all (map list->string (del id (all-todos)))])
     (write-all-to-file all)
@@ -114,7 +116,17 @@
 
 ;; todo
 (define (finish-todo id)
-  (print "finish todo"))
+  (define (mark-todo todos)
+    (cond ((null? todos) '())
+          ((match-todo id (caar todos)) (cons (list (caar todos) "1" (caddar todos)) (mark-todo (cdr todos))))
+          (else (cons (car todos) (mark-todo (cdr todos))))))
+  (define (get-title id todos)
+    (cond ((null? todos) "")
+          ((match-todo id (caar todos)) (caddar todos))
+          (else (get-title (cdr todos)))))
+  (let ([all (map list->string (mark-todo (all-todos)))])
+    (write-all-to-file all)
+    (print (string-append "Finished: " (get-title id (all-todos))))))
 
 ;; todo
 (define (redo-todo id)
