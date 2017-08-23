@@ -65,12 +65,15 @@
   (call-with-input-file filename
                         (lambda (input-port)
                           (let ([all (append (read-lines input-port) (list (list->string todo)))])
-                            (call-with-output-file filename
-                                                   (lambda (output-port)
-                                                     (for-each (lambda (l)
-                                                                 (display l output-port)
-                                                                 (display "\n" output-port)
-                                                                 ) all)))))))
+                            (write-all-to-file all)))))
+
+(define (write-all-to-file all)
+  (call-with-output-file filename
+                         (lambda (output-port)
+                           (for-each (lambda (l)
+                                       (display l output-port)
+                                       (display "\n" output-port)
+                                       ) all))))
 
 ;; => (add-todo "go for a walk")
 ;; => Added!
@@ -98,9 +101,16 @@
   (print "td: '-r' redo an item")
   (print "td: '-d id' delete id of an item"))
 
-;; todo
+
+;; delete an item
 (define (delete-todo id)
-  (print "delete todo"))
+  (define (del id todos)
+    (cond ((null? todos) '())
+          ((number? (string-contains (caar todos) id)) (del id (cdr todos)))
+          (else (cons (car todos) (del id (cdr todos))))))
+  (let ([all (map list->string (del id (all-todos)))])
+    (write-all-to-file all)
+    (print "Deleted!")))
 
 ;; todo
 (define (finish-todo id)
