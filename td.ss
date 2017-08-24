@@ -24,24 +24,42 @@
         ((string=? name "status") (cadr todo))
         ((string=? name "title") (caddr todo))))
 
+(define (color-print s c)
+  (cond ((string=? "" c) (display (string-append "\033[0m" s "\033[0m")))
+        ((string=? "red" c) (display (string-append "\033[1;31m" s "\033[0m")))
+        ((string=? "blue" c) (display (string-append "\033[1;34m" s "\033[0m")))
+        ((string=? "cyan" c) (display (string-append "\033[1;36m" s "\033[0m")))
+        ((string=? "green" c) (display (string-append "\033[1;32m" s "\033[0m")))
+        ((string=? "yellow" c) (display (string-append "\033[1;33m" s "\033[0m")))
+        ))
+
 ;; => (print-todo (list 1 2 1 "take breakfast"))
 ;; => 
 (define (print-todo todo)
-  (display (string-append (get-item "id" todo) ":"))
-  (display " ")
+  (color-print "     |  " "")
+  (color-print (string-append (get-item "id" todo) ":") "")
+  (color-print " " "")
+  (color-print "[ " "")
   (if (string=? (get-item "status" todo) "0")
-    (display "[ ]")
-    (display "[X]"))
-  (display " ")
-  (display (string-append "=> " (get-item "title" todo)))
+    (color-print "O" "red")
+    (color-print "X" "green"))
+  (color-print " ]" "")
+  (color-print (string-append " - " (get-item "title" todo)) "")
   (newline))
 
 ;; return list of all todos
 (define (all-todos) (read-file filename))
 
+;; => (string-slice "test" 0 3)
+;; => "tes"
+(define (string-slice s start count)
+  (if (> count 0)
+    (string-append (string (string-ref s start)) (string-slice s (+ 1 start) (- count 1)))
+    ""))
+
 ;; using uuid (https://github.com/dsosby/chicken-uuid)
 (define (gen-id)
-  (uuid-v4))
+  (string-slice (uuid-v4) 0 3))
 
 ;; => (list-index (list 1 2 3) 1)
 ;; => 2
@@ -87,10 +105,16 @@
 ;; => be42ea11-039a-4e6c-bdb3-400c66c39bb2: [ ] => go for a walk
 ;;    fc628735-112e-485c-378b-8cf6b7bf5593: [ ] => coffee
 (define (print-all)
+  (newline)
+  (color-print "     --------" "")
+  (newline)
   (let ([all (all-todos)])
     (if (> (length all) 0)
       (for-each print-todo all)
-      (print "Empty list!"))))
+      (print "Empty list!")))
+  (color-print "     --------" "")
+  (newline)
+  (newline))
 
 ;; print help
 (define (print-help)
