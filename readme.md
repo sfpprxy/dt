@@ -2,4 +2,4 @@
 
 Manage your tasks with ease.
 
-![screenshot](./img/screenshot.png)
+<img src="./img/screenshot.png" alt="screenshot" width="400" />
