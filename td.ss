@@ -183,7 +183,7 @@
   (newline))
 
 ;; main
-((lambda (filename)
+((lambda ()
    (if (null? (command-line-arguments))
      (print-all)
      (let ([first-arg (list-index (command-line-arguments) 0)]
@@ -195,4 +195,4 @@
               ((string=? "-r" first-arg) (redo-todo second-arg))
               (else (print-help))
               )))
-   ) filename)
+   ))
