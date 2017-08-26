@@ -1,16 +1,5 @@
 #! /usr/local/bin/csi -script
 
-;; # list all
-;;   => td [-l]
-;; # add new item
-;;   => td -a "Go for a walk "
-;; # del one item
-;;   => td -d id
-;; # finish one item
-;;   => td -f id
-;; # redo one item
-;;   => td -r id
-
 (use uuid)
 (require-extension srfi-13)
 
@@ -194,5 +183,4 @@
               ((string=? "-f" first-arg) (finish-todo second-arg))
               ((string=? "-r" first-arg) (redo-todo second-arg))
               (else (print-help))
-              )))
-   ))
+              )))))
