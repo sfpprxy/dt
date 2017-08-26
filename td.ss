@@ -1,17 +1,18 @@
 #! /usr/local/bin/csi -script
 
-(use uuid)
+(use uuid redis-client)
 (require-extension srfi-13)
 
-;; file to read & write
-(define filename "./list")
-
-;; => (get-item "title" (list "id" "status" "take breakfast"))
-;; => "take breakfast"
-(define (get-item name todo)
-  (cond ((string=? name "id") (car todo))
-        ((string=? name "status") (cadr todo))
-        ((string=? name "title") (caddr todo))))
+;; db
+(redis-connect "127.0.0.1" 6379)
+(define (db-add k v)
+  (redis-set k v))
+(define (db-del k)
+  (redis-del k))
+(define (db-getallkeys)
+  (redis-keys "*"))
+(define (db-get k)
+  (redis-get k))
 
 (define (color-print s c)
   (cond ((string=? "" c) (display (string-append "\033[0m" s "\033[0m")))
@@ -29,23 +30,18 @@
          (color-print "     |  " "")
          (s))))
 
-;; => (print-todo (list 1 2 1 "take breakfast"))
-;; => 
-(define (print-todo todo)
+(define (print-todo id status text)
   (print-line (lambda ()
-                (color-print (string-append (get-item "id" todo) ":") "")
+                (color-print (string-append id ":") "")
                 (color-print " " "")
                 (color-print "[ " "")
-                (if (string=? (get-item "status" todo) "0")
+                (if (string=? status "0")
                   (color-print "X" "red")
                   (color-print "O" "green"))
                 (color-print " ]" "")
-                (color-print (string-append " - " (get-item "title" todo)) "")
+                (color-print (string-append " - " text) "")
                 ))
   (newline))
-
-;; return list of all todos
-(define (all-todos) (read-file filename))
 
 ;; => (string-slice "test" 0 3)
 ;; => "tes"
@@ -67,55 +63,29 @@
     ""
     (list-ref l i)))
 
-(define (list->string li)
-  (define (merge-list-item l count)
-    (if (null? l)
-      ""
-      (if (= count (- (length li) 1))
-        (string-append "\"" (car l) "\"" (merge-list-item (cdr l) (+ 1 count)))
-        (string-append "\"" (car l) "\" " (merge-list-item (cdr l) (+ 1 count))))))
-  (string-append "(" (merge-list-item li 0) ")"))
-
-(define (add-todo-to-file todo)
-  (call-with-input-file filename
-                        (lambda (input-port)
-                          (let ([all (append (read-lines input-port) (list (list->string todo)))])
-                            (write-all-to-file all)))))
-
-(define (write-all-to-file all)
-  (call-with-output-file filename
-                         (lambda (output-port)
-                           (for-each (lambda (l)
-                                       (display l output-port)
-                                       (display "\n" output-port)
-                                       ) all))))
-
 ;; => (add-todo "go for a walk")
 ;; => Added!
-(define (add-todo title)
+(define (add-todo text)
   (let ([id (gen-id)]
         [status "0"])
-    (add-todo-to-file (list id status title))
-    (newline)
-    (print "    Added!")
-    (newline)))
+    (let ([k (string-append id ":" status)])
+      (db-add k text)
+      (newline)
+      (print "    Added!")
+      (newline))))
 
-;; => (print-all)
-;; => be42ea11-039a-4e6c-bdb3-400c66c39bb2: [ ] => go for a walk
-;;    fc628735-112e-485c-378b-8cf6b7bf5593: [ ] => coffee
 (define (print-all)
   (newline)
   (color-print "     --------" "")
   (newline)
   (print-line)
   (newline)
-  (let ([all (all-todos)])
-    (if (> (length all) 0)
-      (for-each print-todo all)
-      (print-line (lambda ()
-                    (color-print "Empty list!" "yellow")
-                    (newline)))
-      ))
+  (let ([keys (db-getallkeys)])
+    (for-each (lambda (k)
+                (let ([text (car (db-get k))]
+                      [id (car (string-split k ":"))]
+                      [status (cadr (string-split k ":"))])
+                  (print-todo id status text))) keys))
   (print-line)
   (newline)
   (color-print "     --------" "")
@@ -136,39 +106,31 @@
 
 ;; delete an item
 (define (delete-todo id)
-  (define (del id todos)
-    (cond ((null? todos) '())
-          ((match-todo id (caar todos)) (del id (cdr todos)))
-          (else (cons (car todos) (del id (cdr todos))))))
-  (let ([all (map list->string (del id (all-todos)))])
-    (write-all-to-file all)
-    (newline)
-    (print "    Deleted!")
-    (newline)))
+  (db-del (string-append id ":0"))
+  (db-del (string-append id ":1"))
+  (newline)
+  (print "    Deleted!")
+  (newline))
 
 (define (switch-status id status)
-  (define (mark-todo todos)
-    (cond ((null? todos) '())
-          ((match-todo id (caar todos)) (cons (list (caar todos) status (caddar todos)) (mark-todo (cdr todos))))
-          (else (cons (car todos) (mark-todo (cdr todos))))))
-  (let ([all (map list->string (mark-todo (all-todos)))])
-    (write-all-to-file all)
-    ))
-
-(define (get-title id todos)
-  (cond ((null? todos) "")
-        ((match-todo id (caar todos)) (caddar todos))
-        (else (get-title (cdr todos)))))
+  (let ([t1 (car (db-get (string-append id ":0")))]
+        [t2 (car (db-get (string-append id ":1")))])
+    (db-del (string-append id ":0"))
+    (db-del (string-append id ":1"))
+    (if (null? t1)
+      (db-add (string-append id ":" status) t2)
+      (db-add (string-append id ":" status) t1))))
 
 (define (finish-todo id)
   (switch-status id "1")
   (newline)
-  (print (string-append "    Finished: " (get-title id (all-todos))))
+  (print (string-append "    Finished: " (car (db-get (string-append id ":1")))))
   (newline))
+
 (define (redo-todo id)
   (switch-status id "0")
   (newline)
-  (print (string-append "    Redo: " (get-title id (all-todos))))
+  (print (string-append "    Redo: " (car (db-get (string-append id ":0")))))
   (newline))
 
 ;; main
