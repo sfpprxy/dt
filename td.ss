@@ -94,12 +94,16 @@
 
 ;; print help
 (define (print-help)
-  (print "td: command is unknown")
-  (print "td: '-l' show the list")
-  (print "td: '-a' add a new item")
-  (print "td: '-f' finish an item")
-  (print "td: '-r' redo an item")
-  (print "td: '-d id' delete id of an item"))
+  (newline)
+  (print "Usage:")
+  (print "  => td [options] [args...]")
+  (newline)
+  (print "Options:")
+  (print "  -a  Add an item           [string]")
+  (print "  -d  Delete an item by id  [string]")
+  (print "  -f  Finish an item by id  [string]")
+  (print "  -r  Redo an item by id    [string]")
+  (newline))
 
 (define (match-todo id todo)
   (number? (string-contains todo id)))
