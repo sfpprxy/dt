@@ -17,6 +17,7 @@ Options:
   -f  Finish an item by id  [string]
   -r  Redo an item by id    [string]
   -v  Print current version
+  --clear Clear all items
 ```
 
 ---
