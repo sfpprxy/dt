@@ -16,3 +16,10 @@ Options:
   -f  Finish an item by id  [string]
   -r  Redo an item by id    [string]
 ```
+
+---
+
+#### License: MIT
+
+#### Author: [cyyyu](https://github.com/cyyyu)
+
