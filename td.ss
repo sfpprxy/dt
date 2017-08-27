@@ -40,8 +40,7 @@
                   (color-print "O" "green"))
                 (color-print " ]" "")
                 (color-print (string-append " - " text) "")
-                ))
-  (newline))
+                )))
 
 ;; => (string-slice "test" 0 3)
 ;; => "tes"
@@ -81,11 +80,15 @@
   (print-line)
   (newline)
   (let ([keys (db-getallkeys)])
-    (for-each (lambda (k)
-                (let ([text (car (db-get k))]
-                      [id (car (string-split k ":"))]
-                      [status (cadr (string-split k ":"))])
-                  (print-todo id status text))) keys))
+    (if (null? keys)
+      (print-line (lambda ()
+                    (color-print "Empty list!" "yellow")))
+      (for-each (lambda (k)
+                  (let ([text (car (db-get k))]
+                        [id (car (string-split k ":"))]
+                        [status (cadr (string-split k ":"))])
+                    (print-todo id status text))) keys)))
+  (newline)
   (print-line)
   (newline)
   (color-print "     --------" "")
