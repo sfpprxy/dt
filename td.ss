@@ -3,6 +3,8 @@
 (use uuid redis-client)
 (require-extension srfi-13)
 
+(define VERSION "0.1.0")
+
 ;; db
 (redis-connect "127.0.0.1" 6379)
 (define (db-add k v)
@@ -140,6 +142,11 @@
   (print (string-append "    Redo: " (car (db-get (string-append id ":0")))))
   (newline))
 
+(define (print-version)
+  (newline)
+  (print (string-append "    Version: " VERSION))
+  (newline))
+
 ;; main
 ((lambda ()
    (if (null? (command-line-arguments))
@@ -151,5 +158,6 @@
               ((string=? "-d" first-arg) (delete-todo second-arg))
               ((string=? "-f" first-arg) (finish-todo second-arg))
               ((string=? "-r" first-arg) (redo-todo second-arg))
+              ((string=? "-v" first-arg) (print-version))
               (else (print-help))
               )))))
