@@ -15,6 +15,8 @@
   (redis-keys "*"))
 (define (db-get k)
   (redis-get k))
+(define (db-flush)
+  (redis-flushall))
 
 (define (color-print s c)
   (cond ((string=? "" c) (display (string-append "\033[0m" s "\033[0m")))
@@ -163,6 +165,12 @@
   (print (string-append "    Version: " VERSION))
   (newline))
 
+(define (flush-todos)
+  (db-flush)
+  (newline)
+  (print (string-append "    Cleared!"))
+  (newline))
+
 ;; main
 ((lambda ()
    (if (null? (command-line-arguments))
@@ -175,5 +183,6 @@
               ((string=? "-f" first-arg) (finish-todo second-arg))
               ((string=? "-r" first-arg) (redo-todo second-arg))
               ((string=? "-v" first-arg) (print-version))
+              ((string=? "--clear" first-arg) (flush-todos))
               (else (print-help))
               )))))
