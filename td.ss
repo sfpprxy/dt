@@ -42,6 +42,7 @@
                   (color-print "O" "green"))
                 (color-print " ]" "")
                 (color-print (string-append " - " text) "")
+                (newline)
                 )))
 
 ;; => (string-slice "test" 0 3)
@@ -84,18 +85,33 @@
   (let ([keys (db-getallkeys)])
     (if (null? keys)
       (print-line (lambda ()
-                    (color-print "Empty list!" "yellow")))
-      (for-each (lambda (k)
-                  (let ([text (car (db-get k))]
-                        [id (car (string-split k ":"))]
-                        [status (cadr (string-split k ":"))])
-                    (print-todo id status text))) keys)))
-  (newline)
+                    (color-print "Empty list!" "yellow")
+                    (newline)))
+      (print-in-order keys)))
   (print-line)
   (newline)
   (color-print "     --------" "")
   (newline)
   (newline))
+
+;; print finished items at last
+(define (print-in-order keys #!optional (finished-count  0))
+  (when (not (null? keys))
+    (let ([text (car (db-get (car keys)))]
+          [id (car (string-split (car keys) ":"))]
+          [status (cadr (string-split (car keys) ":"))])
+      (cond ((string=? status "1")
+             (when (< finished-count 3)
+               (print-todo id status text))
+             (print-in-order (cdr keys) (+ finished-count 1))
+             (when (= finished-count 3)
+               (print-line ".....")
+               (newline)
+               (print-line)
+               (newline)))
+            (else
+              (print-in-order (cdr keys) finished-count)
+              (print-todo id status text))))))
 
 ;; print help
 (define (print-help)
