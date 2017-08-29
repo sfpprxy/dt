@@ -1,6 +1,6 @@
 #! /usr/local/bin/csi -script
 
-(use uuid redis-client)
+(use redis-client)
 (require-extension srfi-13)
 
 (define VERSION "0.1.0")
@@ -47,16 +47,17 @@
                 (newline)
                 )))
 
-;; => (string-slice "test" 0 3)
-;; => "tes"
-(define (string-slice s start count)
-  (if (> count 0)
-    (string-append (string (string-ref s start)) (string-slice s (+ 1 start) (- count 1)))
-    ""))
-
-;; using uuid (https://github.com/dsosby/chicken-uuid)
+;; generate id
+(define (get-max-id keys max)
+  (if (null? keys)
+    (number->string (+ max 1))
+    (let ([id (string->number
+                (car (string-split (car keys) ":")))])
+      (if (> id max)
+        (get-max-id (cdr keys) id)
+        (get-max-id (cdr keys) max)))))
 (define (gen-id)
-  (string-slice (uuid-v4) 0 3))
+  (get-max-id (db-getallkeys) 0))
 
 ;; => (list-index (list 1 2 3) 1)
 ;; => 2
@@ -89,12 +90,34 @@
       (print-line (lambda ()
                     (color-print "Empty list!" "yellow")
                     (newline)))
-      (print-in-order keys)))
+      (print-in-order (sort-by-id > keys '()))))
   (print-line)
   (newline)
   (color-print "     --------" "")
   (newline)
   (newline))
+
+;; keys are '("id:status"...)
+;; for instance: '("2:0" "3:1" "0:0" "1:0")
+;; procedure sort-by-id takes a comparison procedure and a list, returns a new list sorted by id
+;; this is using insertion sort
+(define (sort-by-id p keys sorted)
+  (define (insert l b)
+    (if (null? l)
+      (list b)
+      (let ([id1 (string->number
+                   (car
+                     (string-split
+                       (car l) ":")))]
+            [id2 (string->number
+                   (car
+                     (string-split b ":")))])
+        (if (p id1 id2)
+          (cons (car l) (insert (cdr l) b))
+          (cons b l)))))
+  (if (null? keys)
+    sorted
+    (sort-by-id p (cdr keys) (insert sorted (car keys)))))
 
 ;; print finished items at last
 (define (print-in-order keys #!optional (finished-count  0))
