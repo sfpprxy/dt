@@ -57,7 +57,7 @@
         (get-max-id (cdr keys) id)
         (get-max-id (cdr keys) max)))))
 (define (gen-id)
-  (get-max-id (db-getallkeys) 0))
+  (get-max-id (db-getallkeys) 100))
 
 ;; => (list-index (list 1 2 3) 1)
 ;; => 2
