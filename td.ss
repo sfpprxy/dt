@@ -52,14 +52,14 @@
 ;; generate id
 (define (get-max-id keys max)
   (if (null? keys)
-    (number->string max)
+    max
     (let ([id (string->number
                 (car (string-split (car keys) ":")))])
       (if (> id max)
         (get-max-id (cdr keys) id)
         (get-max-id (cdr keys) max)))))
 (define (gen-id)
-  (+ (get-max-id (db-getallkeys) 100)) 1)
+  (number->string (+ (get-max-id (db-getallkeys) 100) 1)))
 
 ;; => (list-index (list 1 2 3) 1)
 ;; => 2
@@ -78,12 +78,10 @@
     (let ([k (string-append id ":" status)])
       (db-add k text)
       (newline)
-      (print "    Added!")
+      (print "     Added!")
       (newline))))
 
 (define (print-all)
-  (newline)
-  (print-line)
   (newline)
   (let ([keys (db-getallkeys)])
     (if (null? keys)
@@ -91,8 +89,6 @@
                     (color-print "Empty list!" "")
                     (newline)))
       (print-in-order (sort-by-id > keys '()))))
-  (print-line)
-  (newline)
   (newline))
 
 ;; keys are '("id:status"...)
@@ -159,7 +155,7 @@
   (db-del (string-append id ":0"))
   (db-del (string-append id ":1"))
   (newline)
-  (print "    Deleted!")
+  (print "     Deleted!")
   (newline))
 
 (define (switch-status id status)
@@ -174,24 +170,24 @@
 (define (finish-todo id)
   (switch-status id "1")
   (newline)
-  (print (string-append "    Finished: " (car (db-get (string-append id ":1")))))
+  (print (string-append "     Finished: " (car (db-get (string-append id ":1")))))
   (newline))
 
 (define (redo-todo id)
   (switch-status id "0")
   (newline)
-  (print (string-append "    Redo: " (car (db-get (string-append id ":0")))))
+  (print (string-append "     Redo: " (car (db-get (string-append id ":0")))))
   (newline))
 
 (define (print-version)
   (newline)
-  (print (string-append "    Version: " VERSION))
+  (print (string-append "     Version: " VERSION))
   (newline))
 
 (define (flush-todos)
   (db-flush)
   (newline)
-  (print (string-append "    Cleared!"))
+  (print (string-append "     Cleared!"))
   (newline))
 
 ;; main
