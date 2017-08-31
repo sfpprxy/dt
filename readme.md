@@ -11,13 +11,13 @@ Usage:
   => td [options] [args...]
 
 Options:
-  -l  List all items
-  -a  Add an item           [string]
-  -d  Delete an item by id  [string]
-  -f  Finish an item by id  [string]
-  -r  Redo an item by id    [string]
-  -v  Print current version
-  --clear Clear all items
+  -l       List all items
+  -a       Add an item           [string]
+  -d       Delete an item by id  [string]
+  -f       Finish an item by id  [string]
+  -r       Redo an item by id    [string]
+  -v       Print current version
+  --clear  Clear all items
 ```
 
 ---
