@@ -52,14 +52,14 @@
 ;; generate id
 (define (get-max-id keys max)
   (if (null? keys)
-    (number->string (+ max 1))
+    (number->string max)
     (let ([id (string->number
                 (car (string-split (car keys) ":")))])
       (if (> id max)
         (get-max-id (cdr keys) id)
         (get-max-id (cdr keys) max)))))
 (define (gen-id)
-  (get-max-id (db-getallkeys) 100))
+  (+ (get-max-id (db-getallkeys) 100)) 1)
 
 ;; => (list-index (list 1 2 3) 1)
 ;; => 2
