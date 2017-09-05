@@ -22,7 +22,15 @@ Options:
 
 ---
 
-#### License: MIT
+### Download
 
-#### Author: [cyyyu](https://github.com/cyyyu)
+Download the binary file [here](https://github.com/cyyyu/td/releases).
+
+### License
+
+MIT
+
+### Author
+
+[cyyyu](https://github.com/cyyyu)
 
