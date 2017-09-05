@@ -22,6 +22,12 @@ Options:
 
 ---
 
+### Requires
+
+The tool requires redis server for storing data.
+
+If you haven't a redis server installed locally, check the offical [doc](https://redis.io/download) for installing.
+
 ### Download
 
 Download the binary file [here](https://github.com/cyyyu/td/releases).
