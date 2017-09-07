@@ -3,7 +3,7 @@
 (use redis-client)
 (require-extension srfi-13)
 
-(define VERSION "0.1.0")
+(define VERSION "1.0.0")
 
 ;; db
 (redis-connect "127.0.0.1" 6379)
