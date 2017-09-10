@@ -29,7 +29,7 @@
         ((string=? "black" c) (display (string-append "\033[0;30m" s "\033[0m")))
         ))
 
-(define (print-line #!optional [s (lambda () "")])
+(define (indent-print #!optional [s (lambda () "")])
   (cond ((string? s)
          (color-print (string-append "     " s) ""))
         ((procedure? s)
@@ -37,7 +37,7 @@
          (s))))
 
 (define (print-todo id status text)
-  (print-line (lambda ()
+  (indent-print (lambda ()
                 (color-print id "light-gray")
                 (color-print " [ " "")
                 (if (string=? status "0")
@@ -85,7 +85,7 @@
   (newline)
   (let ([keys (db-getallkeys)])
     (if (null? keys)
-      (print-line (lambda ()
+      (indent-print (lambda ()
                     (color-print "Empty list!" "")
                     (newline)))
       (print-in-order (sort-by-id > keys '()))))
@@ -123,9 +123,9 @@
              (when (< finished-count 3)
                (print-todo id status text))
              (when (= finished-count 3)
-               (print-line ".....")
+               (indent-print ".....")
                (newline)
-               (print-line)
+               (indent-print)
                (newline))
              (print-in-order (cdr keys) (+ finished-count 1)))
             (else
