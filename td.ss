@@ -32,9 +32,7 @@
 ;; indent spaces and display given strings
 (define (indent-print . params)
   (display "     ")
-  (for-each (lambda (s)
-              (display s))
-            params))
+  (for-each display params))
 
 (define (print-todo id status text)
   (indent-print
@@ -45,7 +43,7 @@
       (wrap-color "O" "green"))
     " ]"
     (wrap-color " - " "light-gray")
-    (wrap-color text "")
+    text
     "\n"))
 
 ;; generate id
