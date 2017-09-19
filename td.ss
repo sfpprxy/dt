@@ -20,14 +20,14 @@
 
 ;; wrap a string with a color
 (define (wrap-color s c)
-  (cond ((string=? "" c) (string-append "\033[0m" s "\033[0m"))
-        ((string=? "red" c) (string-append "\033[1;31m" s "\033[0m"))
-        ((string=? "blue" c) (string-append "\033[1;34m" s "\033[0m"))
-        ((string=? "cyan" c) (string-append "\033[1;36m" s "\033[0m"))
-        ((string=? "green" c) (string-append "\033[1;32m" s "\033[0m"))
-        ((string=? "yellow" c) (string-append "\033[1;33m" s "\033[0m"))
-        ((string=? "light-gray" c) (string-append "\033[1;30m" s "\033[0m"))
-        ((string=? "black" c) (string-append "\033[0;30m" s "\033[0m"))))
+  (cond ((null? c) (string-append "\033[0m" s "\033[0m"))
+        ((eq? 'red c) (string-append "\033[1;31m" s "\033[0m"))
+        ((eq? 'blue c) (string-append "\033[1;34m" s "\033[0m"))
+        ((eq? 'cyan c) (string-append "\033[1;36m" s "\033[0m"))
+        ((eq? 'green c) (string-append "\033[1;32m" s "\033[0m"))
+        ((eq? 'yellow c) (string-append "\033[1;33m" s "\033[0m"))
+        ((eq? 'light-gray c) (string-append "\033[1;30m" s "\033[0m"))
+        ((eq? 'black c) (string-append "\033[0;30m" s "\033[0m"))))
 
 ;; indent spaces and display given strings
 (define (indent-print . params)
@@ -36,13 +36,13 @@
 
 (define (print-todo id status text)
   (indent-print
-    (wrap-color id "light-gray")
+    (wrap-color id 'light-gray)
     " [ "
     (if (string=? status "0")
-      (wrap-color "X" "red")
-      (wrap-color "O" "green"))
+      (wrap-color "X" 'red)
+      (wrap-color "O" 'green))
     " ]"
-    (wrap-color " - " "light-gray")
+    (wrap-color " - " 'light-gray)
     text
     "\n"))
 
@@ -118,7 +118,7 @@
              (when (< finished-count 3)
                (print-todo id status text))
              (when (= finished-count 3)
-               (indent-print '".....\n")
+               (indent-print ".....\n")
                (newline))
              (print-in-order (cdr keys) (+ finished-count 1)))
             (else
