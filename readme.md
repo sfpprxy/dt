@@ -1,4 +1,4 @@
-# Td - Command line todo list manager.
+# Dt - Command line todo list manager.
 
 Manage your tasks with ease.
 
@@ -8,7 +8,7 @@ Manage your tasks with ease.
 
 ```
 Usage:
-  => td [options] [args...]
+  => dt [options] [args...]
 
 Options:
   -l       List all items
@@ -30,7 +30,7 @@ If you haven't a redis server installed locally, check the offical [doc](https:/
 
 ### Download
 
-Download the binary file [here](https://github.com/cyyyu/td/releases).
+Download the binary file [here](https://github.com/cyyyu/dt/releases).
 
 ### License
 
