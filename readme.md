@@ -28,9 +28,11 @@ The tool requires redis server for storing data.
 
 If you haven't a redis server installed locally, check the offical [doc](https://redis.io/download) for installing.
 
-### Download
+### Install
 
-Download the binary file [here](https://github.com/cyyyu/dt/releases).
+For macOS users, you are able to install with homebrew: `brew tap cyyyu/tap && brew install dt`
+
+Or you can download the binary file [here](https://github.com/cyyyu/dt/releases)
 
 ### License
 
