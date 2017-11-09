@@ -181,7 +181,7 @@
     (define (print-help)
       (newline)
       (indent-print "Usage:\n")
-      (indent-print "  => td [options] [args...]\n")
+      (indent-print "  => dt [options] [args...]\n")
       (newline)
       (indent-print "Options:\n")
       (indent-print "  -a        Add an item           [string]\n")
