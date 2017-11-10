@@ -28,6 +28,8 @@ The tool requires redis server for storing data.
 
 If you haven't a redis server installed locally, check the offical [doc](https://redis.io/download) for installing.
 
+For macOS, simply use `brew install redis` and `brew services start redis`
+
 ### Install
 
 For macOS users, you are able to install with homebrew: `brew tap cyyyu/tap && brew install dt`
