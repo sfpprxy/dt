@@ -72,9 +72,10 @@
         ""
         (list-ref l i)))
 
-    ;; keys are '("id:status"...)
-    ;; for instance: '("2:0" "3:1" "0:0" "1:0")
-    ;; procedure sort-by-id takes a comparison procedure and a list, returns a new list sorted by id
+    ;; this procedure takes a comparison procedure and a list containing keys
+    ;; returns a new list sorted by id
+    ;;   keys are '("id:status"...)
+    ;;   for instance: '("2:0" "3:1" "0:0" "1:0")
     ;; this is using insertion sort
     (define (sort-by-id p keys sorted)
       (define (insert l b)
@@ -111,6 +112,7 @@
                   (print-in-order (cdr keys) finished-count)
                   (print-todo id status text))))))
 
+    ;; set status
     (define (switch-status id status)
       (let ([t1 (car (db-get (string-append id ":0")))]
             [t2 (car (db-get (string-append id ":1")))])
@@ -120,7 +122,7 @@
           (db-add (string-append id ":" status) t2)
           (db-add (string-append id ":" status) t1))))
 
-    ;; public apis
+    ;; dispatch available apis
 
     ;; print all todos
     (define (print-all)
