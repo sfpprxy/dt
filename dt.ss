@@ -116,6 +116,8 @@
     (define (switch-status id status)
       (let ([t1 (car (db-get (string-append id ":0")))]
             [t2 (car (db-get (string-append id ":1")))])
+        (if (and (null? t1) (null? t2))
+          (error "No such id" id))
         (db-del (string-append id ":0"))
         (db-del (string-append id ":1"))
         (if (null? t1)
