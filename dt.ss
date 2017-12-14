@@ -212,8 +212,8 @@
     dispatch))
 
 ;; main
-((lambda ()
-   (let ([manager (make-todo-manager)])
-     (if (null? (command-line-arguments))
-       (manager "-l")
-       (manager (car (command-line-arguments)))))))
+(begin
+  (let ([manager (make-todo-manager)])
+    (if (null? (command-line-arguments))
+      (manager "-l")
+      (manager (car (command-line-arguments))))))
